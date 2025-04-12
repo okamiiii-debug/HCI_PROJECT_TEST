@@ -1,0 +1,276 @@
+{% extends 'wellness/base.html' %}
+{% load static %}
+
+{% block page_title %}My Dashboard{% endblock %}
+
+{% block content %}
+<div class="dashboard-grid">
+    <!-- Left Column -->
+    <div class="left-column">
+        <!-- Categories Section -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Study Areas</h2>
+            </div>
+            <div class="categories">
+                <div class="category-card" style="background-color: #fff5ec;">
+                    <div class="category-icon" style="background-color: #f8d7a6;">
+                        <img src="{% static 'wellness/svg/ui-design.svg' %}" alt="Tests" width="40" height="40">
+                    </div>
+                    <div class="category-name">Tests</div>
+                    <div class="category-info">
+                        {% with test_count=reminders|dictsort:"reminder_type"|length %}
+                        {{ test_count }} upcoming
+                        {% endwith %}
+                    </div>
+                    <button class="btn-secondary" data-toggle="modal" data-target="#add-reminder-modal">Add Test</button>
+                </div>
+                
+                <div class="category-card" style="background-color: #edf3ff;">
+                    <div class="category-icon" style="background-color: #d8e4fd;">
+                        <img src="{% static 'wellness/svg/illustration.svg' %}" alt="Assignments" width="40" height="40">
+                    </div>
+                    <div class="category-name">Assignments</div>
+                    <div class="category-info">
+                        {% with assignment_count=reminders|dictsort:"reminder_type"|length %}
+                        {{ assignment_count }} upcoming
+                        {% endwith %}
+                    </div>
+                    <button class="btn-secondary" data-toggle="modal" data-target="#add-reminder-modal">Add Assignment</button>
+                </div>
+                
+                <div class="category-card" style="background-color: #e9fbf5;">
+                    <div class="category-icon" style="background-color: #c6f0e5;">
+                        <img src="{% static 'wellness/svg/development.svg' %}" alt="Presentations" width="40" height="40">
+                    </div>
+                    <div class="category-name">Presentations</div>
+                    <div class="category-info">
+                        {% with presentation_count=reminders|dictsort:"reminder_type"|length %}
+                        {{ presentation_count }} upcoming
+                        {% endwith %}
+                    </div>
+                    <button class="btn-secondary" data-toggle="modal" data-target="#add-reminder-modal">Add Presentation</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Team Members Section (Therapists) -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Wellness Therapists</h2>
+                <a href="{% url 'therapist_booking' %}" class="view-all">Book a Session</a>
+            </div>
+            <div class="team-members">
+                <div class="member">
+                    <div class="member-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <circle cx="20" cy="20" r="20" fill="#4a86e8"/>
+                            <text x="20" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">MM</text>
+                        </svg>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">Dr. Motho Mothoane</div>
+                        <div class="member-role">General Wellness</div>
+                    </div>
+                </div>
+                
+                <div class="member">
+                    <div class="member-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <circle cx="20" cy="20" r="20" fill="#06d6a0"/>
+                            <text x="20" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">JJ</text>
+                        </svg>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">Dr. James Jamerson</div>
+                        <div class="member-role">Stress Management</div>
+                    </div>
+                </div>
+                
+                <div class="member">
+                    <div class="member-avatar">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40">
+                            <circle cx="20" cy="20" r="20" fill="#ef476f"/>
+                            <text x="20" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" text-anchor="middle">FF</text>
+                        </svg>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">Dr. Frida Fridada</div>
+                        <div class="member-role">Academic Wellness</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Reminders List Section -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">My Reminders</h2>
+                <button class="btn" data-toggle="modal" data-target="#add-reminder-modal">Add Reminder</button>
+            </div>
+            <div class="reminders-list">
+                {% if reminders %}
+                    {% for reminder in reminders %}
+                    <div class="reminder-item" data-id="{{ reminder.id }}">
+                        <div class="reminder-type reminder-{{ reminder.reminder_type }}">
+                            {% if reminder.reminder_type == 'test' %}📝
+                            {% elif reminder.reminder_type == 'assignment' %}📚
+                            {% elif reminder.reminder_type == 'presentation' %}🎯
+                            {% endif %}
+                        </div>
+                        <div class="reminder-details">
+                            <div class="reminder-title">{{ reminder.title }}</div>
+                            <div class="reminder-date">{{ reminder.date|date:"Y-m-d H:i" }}</div>
+                        </div>
+                        <div class="reminder-actions">
+                            <div class="reminder-delete" data-id="{{ reminder.id }}">❌</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        No reminders yet. Add your first reminder!
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Right Column -->
+    <div class="right-column">
+        <!-- Mood Check Card -->
+        <div class="card mood-tracker">
+            <div class="card-header">
+                <h2 class="card-title">How are you feeling today?</h2>
+            </div>
+            <div class="mood-options">
+                <a href="{% url 'mood_tracker' %}" class="mood-option mood-happy" data-mood="happy">
+                    <div class="mood-icon">😊</div>
+                    <div class="mood-label">Happy</div>
+                </a>
+                <a href="{% url 'mood_tracker' %}" class="mood-option mood-angry" data-mood="angry">
+                    <div class="mood-icon">😠</div>
+                    <div class="mood-label">Angry</div>
+                </a>
+                <a href="{% url 'mood_tracker' %}" class="mood-option mood-sad" data-mood="sad">
+                    <div class="mood-icon">😢</div>
+                    <div class="mood-label">Sad</div>
+                </a>
+                <a href="{% url 'mood_tracker' %}" class="mood-option mood-frustrated" data-mood="frustrated">
+                    <div class="mood-icon">😫</div>
+                    <div class="mood-label">Frustrated</div>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Calendar Section -->
+        <div class="card calendar-section">
+            <div class="calendar-header">
+                <h2 class="card-title">Calendar</h2>
+                <div class="calendar-controls">
+                    <button id="prev-month" class="btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                    </button>
+                    <span id="month-year-display" class="month-display">{{ today|date:"F Y" }}</span>
+                    <button id="next-month" class="btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="9 18 15 12 9 6"></polyline>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="calendar-container" data-month="{{ today|date:"n"|add:"-1" }}" data-year="{{ today|date:"Y" }}">
+                <div id="calendar-grid" class="calendar-grid">
+                    <!-- Day headers -->
+                    <div class="calendar-day-header">Sun</div>
+                    <div class="calendar-day-header">Mon</div>
+                    <div class="calendar-day-header">Tue</div>
+                    <div class="calendar-day-header">Wed</div>
+                    <div class="calendar-day-header">Thu</div>
+                    <div class="calendar-day-header">Fri</div>
+                    <div class="calendar-day-header">Sat</div>
+                    
+                    <!-- Calendar days will be generated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Today's Schedule -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Today's Schedule</h2>
+                <span class="view-all">View details</span>
+            </div>
+            <div class="today-events">
+                {% with today_reminders=reminders|dictsort:"date" %}
+                {% if today_reminders %}
+                    {% for reminder in today_reminders %}
+                    {% if reminder.date|date:"Y-m-d" == today|date:"Y-m-d" %}
+                    <div class="event-card">
+                        <div class="event-date">
+                            <div class="event-day">{{ reminder.date|date:"d" }}</div>
+                            <div class="event-month">{{ reminder.date|date:"M" }}</div>
+                        </div>
+                        <div class="event-details">
+                            <div class="event-title">{{ reminder.title }}</div>
+                            <div class="event-category">{{ reminder.get_reminder_type_display }}</div>
+                        </div>
+                        <div class="event-time">{{ reminder.date|date:"H:i" }}</div>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state">
+                        No events scheduled for today.
+                    </div>
+                {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modals %}
+<!-- Add Reminder Modal -->
+<div id="add-reminder-modal" class="modal-backdrop">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">Add Reminder</h3>
+            <button type="button" class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="add-reminder-form" method="post" action="{% url 'add_reminder' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="id_title">Title</label>
+                    {{ reminder_form.title }}
+                </div>
+                <div class="form-group">
+                    <label for="id_description">Description (Optional)</label>
+                    {{ reminder_form.description }}
+                </div>
+                <div class="form-group">
+                    <label for="id_date">Date & Time</label>
+                    {{ reminder_form.date }}
+                </div>
+                <div class="form-group">
+                    <label for="id_reminder_type">Type</label>
+                    {{ reminder_form.reminder_type }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary modal-cancel">Cancel</button>
+                    <button type="submit" class="btn">Add Reminder</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'wellness/js/calendar.js' %}"></script>
+{% endblock %}

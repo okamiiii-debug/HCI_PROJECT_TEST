@@ -1,0 +1,112 @@
+{% extends 'wellness/base.html' %}
+{% load static %}
+
+{% block page_title %}Book a Therapist{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">Book a Therapist Session</h2>
+    </div>
+    
+    {% if mood_entry %}
+    <div class="mood-info" style="margin-bottom: 1.5rem; padding: 1rem; background-color: #f8f9fa; border-radius: var(--border-radius);">
+        <p>We noticed you were feeling <strong>{{ mood_entry.get_mood_display }}</strong>.</p>
+        <p>It's good to talk to someone when you're not feeling your best. Our therapists are here to help.</p>
+    </div>
+    {% endif %}
+    
+    <form method="post" action="">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            <label>Choose a Therapist:</label>
+            <div class="therapist-options">
+                <div class="therapist-card" data-therapist="Dr. Motho Mothoane">
+                    <div class="therapist-avatar">MM</div>
+                    <div class="therapist-name">Dr. Motho Mothoane</div>
+                    <div class="therapist-specialty">General Wellness</div>
+                </div>
+                
+                <div class="therapist-card" data-therapist="Dr. James Jamerson">
+                    <div class="therapist-avatar">JJ</div>
+                    <div class="therapist-name">Dr. James Jamerson</div>
+                    <div class="therapist-specialty">Stress Management</div>
+                </div>
+                
+                <div class="therapist-card" data-therapist="Dr. Frida Fridada">
+                    <div class="therapist-avatar">FF</div>
+                    <div class="therapist-name">Dr. Frida Fridada</div>
+                    <div class="therapist-specialty">Academic Wellness</div>
+                </div>
+            </div>
+            
+            <!-- Hidden input for the selected therapist -->
+            {{ form.therapist_name }}
+            
+            {% if form.therapist_name.errors %}
+            <div class="invalid-feedback">
+                {{ form.therapist_name.errors }}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_appointment_date">Appointment Date:</label>
+            {{ form.appointment_date }}
+            {% if form.appointment_date.errors %}
+            <div class="invalid-feedback">
+                {{ form.appointment_date.errors }}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_feelings">How are you feeling?</label>
+            {{ form.feelings }}
+            {% if form.feelings.errors %}
+            <div class="invalid-feedback">
+                {{ form.feelings.errors }}
+            </div>
+            {% endif %}
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <button type="submit" class="btn">Book Appointment</button>
+            <a href="{% url 'dashboard' %}" class="btn btn-secondary" style="margin-left: 1rem;">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle therapist selection
+    const therapistCards = document.querySelectorAll('.therapist-card');
+    const therapistInput = document.getElementById('id_therapist_name');
+    
+    therapistCards.forEach(card => {
+        card.addEventListener('click', function() {
+            // Remove selected class from all cards
+            therapistCards.forEach(c => c.classList.remove('selected'));
+            
+            // Add selected class to clicked card
+            this.classList.add('selected');
+            
+            // Update hidden input value
+            const therapistName = this.getAttribute('data-therapist');
+            therapistInput.value = therapistName;
+        });
+    });
+    
+    // If there's already a selected therapist (e.g., form validation failed), highlight it
+    if (therapistInput.value) {
+        const selectedCard = document.querySelector(`.therapist-card[data-therapist="${therapistInput.value}"]`);
+        if (selectedCard) {
+            selectedCard.classList.add('selected');
+        }
+    }
+});
+</script>
+{% endblock %}

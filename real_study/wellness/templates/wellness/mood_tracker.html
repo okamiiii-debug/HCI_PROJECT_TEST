@@ -1,0 +1,100 @@
+{% extends 'wellness/base.html' %}
+{% load static %}
+
+{% block page_title %}Mood Tracker{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title">How are you feeling today?</h2>
+    </div>
+    
+    <form id="mood-form" method="post" action="{% url 'mood_tracker' %}">
+        {% csrf_token %}
+        {{ form.mood.as_hidden }}
+        
+        <div class="mood-options">
+            <div class="mood-option mood-happy" data-mood="happy">
+                <div class="mood-icon">😊</div>
+                <div class="mood-label">Happy</div>
+            </div>
+            <div class="mood-option mood-angry" data-mood="angry">
+                <div class="mood-icon">😠</div>
+                <div class="mood-label">Angry</div>
+            </div>
+            <div class="mood-option mood-sad" data-mood="sad">
+                <div class="mood-icon">😢</div>
+                <div class="mood-label">Sad</div>
+            </div>
+            <div class="mood-option mood-frustrated" data-mood="frustrated">
+                <div class="mood-icon">😫</div>
+                <div class="mood-label">Frustrated</div>
+            </div>
+        </div>
+        
+        <div class="text-center" style="margin-top: 2rem;">
+            <p>Click on a mood to select it</p>
+        </div>
+    </form>
+</div>
+
+<!-- Previous Mood Entries -->
+<div class="card" style="margin-top: 2rem;">
+    <div class="card-header">
+        <h2 class="card-title">Your Recent Moods</h2>
+    </div>
+    
+    <div class="mood-history">
+        {% with mood_entries=entries %}
+        {% if mood_entries %}
+            <table style="width: 100%; border-spacing: 0; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="text-align: left; padding: 0.75rem;">Mood</th>
+                        <th style="text-align: left; padding: 0.75rem;">Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for entry in mood_entries %}
+                    <tr>
+                        <td style="padding: 0.75rem;">
+                            {% if entry.mood == 'happy' %}
+                            <span style="display: inline-flex; align-items: center;">
+                                <span style="background-color: var(--success-color); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-right: 0.5rem;">😊</span>
+                                Happy
+                            </span>
+                            {% elif entry.mood == 'angry' %}
+                            <span style="display: inline-flex; align-items: center;">
+                                <span style="background-color: var(--danger-color); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-right: 0.5rem;">😠</span>
+                                Angry
+                            </span>
+                            {% elif entry.mood == 'sad' %}
+                            <span style="display: inline-flex; align-items: center;">
+                                <span style="background-color: var(--info-color); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-right: 0.5rem;">😢</span>
+                                Sad
+                            </span>
+                            {% elif entry.mood == 'frustrated' %}
+                            <span style="display: inline-flex; align-items: center;">
+                                <span style="background-color: var(--warning-color); width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; margin-right: 0.5rem;">😫</span>
+                                Frustrated
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td style="padding: 0.75rem;">{{ entry.created_at|date:"F d, Y H:i" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state" style="padding: 2rem; text-align: center;">
+                No mood entries yet. This is your first one!
+            </div>
+        {% endif %}
+        {% endwith %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'wellness/js/mood.js' %}"></script>
+{% endblock %}

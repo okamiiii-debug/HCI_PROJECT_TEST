@@ -1,0 +1,26 @@
+{% extends 'wellness/base.html' %}
+{% load static %}
+
+{% block page_title %}Breathing Exercise{% endblock %}
+
+{% block content %}
+<div id="breathing-container" class="breathing-container">
+    <h2>Take a moment to breathe</h2>
+    <p>Follow the circle as it expands and contracts</p>
+    
+    <div id="breathing-circle" class="breathing-circle">
+        <span id="breathing-instruction">Breathe in...</span>
+    </div>
+    
+    <div id="breathing-timer" class="breathing-timer">00:45</div>
+    
+    <div class="breathing-actions">
+        <a id="continue-app" href="{% url 'dashboard' %}" class="btn">Continue Using App</a>
+        <a id="book-therapist" href="{% url 'therapist_booking_from_mood' mood_entry.id %}" class="btn btn-secondary">Book a Therapist</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'wellness/js/breathing.js' %}"></script>
+{% endblock %}
