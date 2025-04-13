@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Python bytecode
 __pycache__/
 *.py[cod]
@@ -46,3 +47,22 @@ Thumbs.db
 # Replit specific
 .replit
 .pythonlibs/
+=======
+# Python
+*.pyc
+*.pyo
+__pycache__/
+
+# Virtual Environment
+venv/
+
+# Django
+db.sqlite3
+*.log
+
+# VS Code
+.vscode/
+
+# Environment Variables
+.env
+>>>>>>> 7082f2a221684411e7db5f65042ad53f127d9106
